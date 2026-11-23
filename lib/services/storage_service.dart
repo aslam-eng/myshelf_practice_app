@@ -47,7 +47,9 @@ class StorageService {
       }
       return products;
     } on FormatException {
-      return []; // saved data is broken: start fresh instead of crashing
+      return []; // text is not valid JSON
+    } on TypeError {
+      return []; // valid JSON, but the wrong shape
     }
   }
 }

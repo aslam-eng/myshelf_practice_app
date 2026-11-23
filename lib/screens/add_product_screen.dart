@@ -46,7 +46,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   String? _validatePrice(String? value) {
     final price = double.tryParse(value?.trim() ?? '');
-    if (price == null || !price.isFinite) return 'Please enter a valid number';;
+    if (price == null || !price.isFinite) return 'Please enter a valid number';
     if (price <= 0) return 'Price must be greater than zero';
     return null;
   }
