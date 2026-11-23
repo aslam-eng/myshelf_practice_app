@@ -5,7 +5,7 @@ import 'providers/favourites_provider.dart';
 import 'providers/products_provider.dart';
 import 'providers/profile_provider.dart';
 import 'screens/main_shell.dart';
-import 'theme/app_colors.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   // Needed because shared_preferences (native code) is used before runApp.
@@ -42,14 +42,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'My Product Shelf',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary,
-          surface: Colors.white,
-        ),
-        scaffoldBackgroundColor: Colors.white,
-      ),
+      theme: AppTheme.light,
       home: const MainShell(), // bottom navigation: Home / Saved / Profile
     );
   }

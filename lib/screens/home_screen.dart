@@ -5,7 +5,6 @@ import '../models/product.dart';
 import '../providers/products_provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/product_service.dart';
-import '../theme/app_colors.dart';
 import '../widgets/product_card.dart';
 import 'add_product_screen.dart';
 
@@ -120,15 +119,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 // read: send the text without rebuilding this whole screen.
                 onChanged: (value) =>
                     context.read<ProductsProvider>().setSearchText(value),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Search products...',
-                  prefixIcon: const Icon(Icons.search),
-                  filled: true,
-                  fillColor: AppColors.surfaceSoft,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
+                  prefixIcon: Icon(Icons.search),
                 ),
               ),
               const SizedBox(height: 16),
