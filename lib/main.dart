@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/favourites_provider.dart';
+import 'providers/products_provider.dart';
 import 'providers/profile_provider.dart';
 import 'screens/main_shell.dart';
 
@@ -25,6 +26,7 @@ Future<void> main() async {
         // They live for the whole app, so no manual dispose is needed.
         ChangeNotifierProvider.value(value: favouritesProvider),
         ChangeNotifierProvider.value(value: profileProvider),
+        ChangeNotifierProvider(create: (_) => ProductsProvider()),
       ],
       child: const MyApp(),
     ),

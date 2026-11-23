@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product.dart';
+import '../providers/products_provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/product_service.dart';
 import '../widgets/product_card.dart';
@@ -22,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Product> _products = [];
   bool _isLoading = true;
   String? _error; // null = no error
-  String _searchText = '';
 
   // ---------- Lifecycle ----------
   // Order: initState (once) -> build (many times) -> dispose (once).
@@ -76,15 +76,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Calculated from _products + _searchText. Not a second stored list.
-  List<Product> get _filteredProducts {
-    final query = _searchText.trim().toLowerCase();
-    if (query.isEmpty) return _products;
-    return _products
-        .where((p) => p.title.toLowerCase().contains(query))
-        .toList();
-  }
-
   // ---------- UI ----------
   @override
   Widget build(BuildContext context) {
@@ -125,7 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _searchController,
-                onChanged: (value) => setState(() => _searchText = value),
+                // read: send the text without rebuilding this whole screen.
+                onChanged: (value) =>
+                    context.read<ProductsProvider>().setSearchText(value),
                 decoration: InputDecoration(
                   hintText: 'Search products...',
                   prefixIcon: const Icon(Icons.search),
@@ -145,15 +138,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
-                  Text(
-                    '${_filteredProducts.length} items',
-                    style: const TextStyle(color: Colors.grey),
+                  // Consumer: only this count rebuilds while searching.
+                  Consumer<ProductsProvider>(
+                    builder: (context, search, child) {
+                      final count = search.filter(_products).length;
+                      return Text(
+                        '$count items',
+                        style: const TextStyle(color: Colors.grey),
+                      );
+                    },
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               // Expanded: the list gets the remaining height (bounded space).
-              Expanded(child: _buildContent()),
+              Expanded(
+                // Consumer: only the list area rebuilds while searching.
+                child: Consumer<ProductsProvider>(
+                  builder: (context, search, child) {
+                    return _buildContent(
+                      search.filter(_products),
+                      search.searchText,
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),
@@ -162,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Shows exactly ONE state: loading, error, empty, or the list.
-  Widget _buildContent() {
+  Widget _buildContent(List<Product> products, String searchText) {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -185,13 +194,12 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    final products = _filteredProducts;
     if (products.isEmpty) {
       return Center(
         child: Text(
-          _searchText.isEmpty
+          searchText.isEmpty
               ? 'No products available'
-              : 'No products match "$_searchText"',
+              : 'No products match "$searchText"',
           style: const TextStyle(color: Colors.grey),
         ),
       );
