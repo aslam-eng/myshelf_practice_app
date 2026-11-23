@@ -22,8 +22,8 @@ class ProductService {
         throw ApiException('Server error (${response.statusCode})');
       }
 
-      final data = jsonDecode(response.body);
-      final products = data['products'];
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final products = data['products'] as List<dynamic>;
 
       final List<Product> productList = [];
       for (final item in products) {
@@ -35,6 +35,8 @@ class ProductService {
     } on TimeoutException {
       throw ApiException('Request timed out. Please try again.');
     } on FormatException {
+      throw ApiException('Unexpected response from server');
+    } on TypeError {
       throw ApiException('Unexpected response from server');
     }
   }
@@ -57,13 +59,15 @@ class ProductService {
         throw ApiException('Server error (${response.statusCode})');
       }
 
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
       return data['id'] as int;
     } on SocketException {
       throw ApiException('No internet connection');
     } on TimeoutException {
       throw ApiException('Request timed out. Please try again.');
     } on FormatException {
+      throw ApiException('Unexpected response from server');
+    } on TypeError {
       throw ApiException('Unexpected response from server');
     }
   }
