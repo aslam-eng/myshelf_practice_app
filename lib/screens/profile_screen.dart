@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/profile_provider.dart';
-import '../theme/app_colors.dart';
+import '../widgets/status_box.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -179,20 +179,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               if (_showSaved) ...[
                 const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.successBackground,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'Profile saved',
-                    style: TextStyle(
-                      color: AppColors.successText,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                const StatusBox(
+                  type: StatusType.success,
+                  title: 'Profile saved',
                 ),
               ],
               const SizedBox(height: 16),
