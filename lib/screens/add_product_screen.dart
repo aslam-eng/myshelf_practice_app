@@ -54,14 +54,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
   // ---------- Submit ----------
   Future<void> _submit() async {
     if (_isSending) return; // Guard 1: ignore a second quick tap
-    if (!_formKey.currentState!.validate()) return; // shows errors under fields
 
-    FocusScope.of(context).unfocus(); // close the keyboard
+    // Remove the old result first, so it can't sit beside a new error.
     setState(() {
-      _isSending = true;
       _createdId = null;
       _error = null;
     });
+
+    if (!_formKey.currentState!.validate()) return; // shows errors under fields
+
+    FocusScope.of(context).unfocus(); // close the keyboard
+    setState(() => _isSending = true);
 
     try {
       final id = await _productService.addProduct(
