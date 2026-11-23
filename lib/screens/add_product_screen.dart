@@ -120,7 +120,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 controller: _titleController,
                 validator: _validateTitle,
                 textInputAction: TextInputAction.next,
-                decoration: _inputDecoration('e.g. Travel mug'),
+                decoration: const InputDecoration(hintText: 'e.g. Travel mug'),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -133,7 +133,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 validator: _validatePrice,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
-                decoration: _inputDecoration('e.g. 19.99'),
+                decoration: const InputDecoration(hintText: 'e.g. 19.99'),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -176,18 +176,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: AppColors.surfaceSoft,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
       ),
     );
   }

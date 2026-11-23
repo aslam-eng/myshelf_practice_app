@@ -167,12 +167,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 decoration: InputDecoration(
                   hintText: 'Your name',
                   errorText: _nameError,
-                  filled: true,
-                  fillColor: AppColors.surfaceSoft,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
                 ),
               ),
               const SizedBox(height: 16),
