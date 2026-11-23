@@ -5,6 +5,7 @@ import '../models/product.dart';
 import '../providers/products_provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/product_service.dart';
+import '../theme/app_colors.dart';
 import '../widgets/product_card.dart';
 import 'add_product_screen.dart';
 
@@ -123,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   hintText: 'Search products...',
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
-                  fillColor: const Color(0xFFF3F5F9),
+                  fillColor: AppColors.surfaceSoft,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,

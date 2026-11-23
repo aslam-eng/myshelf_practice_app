@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/profile_provider.dart';
+import '../theme/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -167,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   hintText: 'Your name',
                   errorText: _nameError,
                   filled: true,
-                  fillColor: const Color(0xFFF3F5F9),
+                  fillColor: AppColors.surfaceSoft,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -188,13 +189,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
+                    color: AppColors.successBackground,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Text(
                     'Profile saved',
                     style: TextStyle(
-                      color: Color(0xFF2E7D32),
+                      color: AppColors.successText,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

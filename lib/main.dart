@@ -5,6 +5,7 @@ import 'providers/favourites_provider.dart';
 import 'providers/products_provider.dart';
 import 'providers/profile_provider.dart';
 import 'screens/main_shell.dart';
+import 'theme/app_colors.dart';
 
 Future<void> main() async {
   // Needed because shared_preferences (native code) is used before runApp.
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF3355F0), // blue primary
+          seedColor: AppColors.primary,
           surface: Colors.white,
         ),
         scaffoldBackgroundColor: Colors.white,
