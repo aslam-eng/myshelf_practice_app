@@ -60,8 +60,17 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } catch (e) {
       if (!mounted) return;
+
+      // Refresh failed, but we still have products: keep showing them.
+      if (_products.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not refresh: $e')),
+        );
+        return;
+      }
+
       setState(() {
-        _error = e.toString(); // ApiException gives a clean message
+        _error = e.toString(); // nothing to show, so use the error page
         _isLoading = false;
       });
     }
