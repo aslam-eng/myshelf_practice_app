@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/product_service.dart';
+import '../theme/app_colors.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -147,16 +148,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
               if (_createdId != null)
                 _resultBox(
-                  color: const Color(0xFFE8F5E9),
-                  textColor: const Color(0xFF2E7D32),
+                  color: AppColors.successBackground,
+                  textColor: AppColors.successText,
                   title: 'Demo request successful',
                   message: 'Product ID: $_createdId',
                 ),
 
               if (_error != null) ...[
                 _resultBox(
-                  color: const Color(0xFFFDECEA),
-                  textColor: const Color(0xFFC62828),
+                  color: AppColors.errorBackground,
+                  textColor: AppColors.errorText,
                   title: 'Request failed',
                   message: _error!,
                 ),
@@ -183,7 +184,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     return InputDecoration(
       hintText: hint,
       filled: true,
-      fillColor: const Color(0xFFF3F5F9),
+      fillColor: AppColors.surfaceSoft,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,

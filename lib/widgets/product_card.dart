@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/product.dart';
 import '../providers/favourites_provider.dart';
+import '../theme/app_colors.dart';
 
 // One product box. Used by BOTH Home and Saved.
 class ProductCard extends StatelessWidget {
@@ -20,7 +21,7 @@ class ProductCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F5F9), // soft grey card
+        color: AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -112,7 +113,7 @@ class ProductCard extends StatelessWidget {
     return Container(
       width: 96,
       height: 96,
-      color: const Color(0xFFE3E8F2),
+      color: AppColors.placeholder,
       child: const Icon(Icons.image_not_supported_outlined, color: Colors.grey),
     );
   }
