@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/product_service.dart';
 import '../widgets/field_label.dart';
 import '../widgets/info_badge.dart';
+import '../widgets/page_title.dart';
 import '../widgets/status_box.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -24,7 +25,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
   String? _error; // set on failure
 
   // ---------- Lifecycle (logged for the demo) ----------
-  // Open screen: initState -> build. Type: build again. Back: dispose.
+  // Open sheet: initState -> build.
+  // Keyboard moves or setState: build again. Close sheet: dispose.
   @override
   void initState() {
     super.initState();
@@ -90,16 +92,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     debugPrint('AddProductScreen: build');
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add product')),
+    return Padding(
+      // viewInsets.bottom = keyboard height, so the form stays above it.
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
+      ),
       // Scrollable, so the keyboard can never hide the button.
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const PageTitle('Add product'),
+              const SizedBox(height: 12),
               const InfoBadge('Demo request'),
               const SizedBox(height: 24),
               const FieldLabel('Product title'),
