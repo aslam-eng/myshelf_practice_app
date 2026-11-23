@@ -5,7 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/profile_provider.dart';
-import '../theme/app_colors.dart';
+import '../widgets/field_label.dart';
+import '../widgets/page_title.dart';
+import '../widgets/status_box.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -101,10 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'My profile',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
+              const PageTitle('My profile'),
               const SizedBox(height: 24),
 
               // ---------- Avatar + camera button (Stack + Positioned) ----------
@@ -147,11 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
 
               // ---------- Name form ----------
-              const Text(
-                'Display name',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+              const FieldLabel('Display name'),
               TextField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,
@@ -179,20 +174,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               if (_showSaved) ...[
                 const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.successBackground,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'Profile saved',
-                    style: TextStyle(
-                      color: AppColors.successText,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                const StatusBox(
+                  type: StatusType.success,
+                  title: 'Profile saved',
                 ),
               ],
               const SizedBox(height: 16),

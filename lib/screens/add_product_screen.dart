@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../services/product_service.dart';
-import '../theme/app_colors.dart';
+import '../widgets/field_label.dart';
+import '../widgets/info_badge.dart';
+import '../widgets/status_box.dart';
 
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
@@ -87,7 +89,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   @override
   Widget build(BuildContext context) {
     debugPrint('AddProductScreen: build');
-    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Add product')),
@@ -99,23 +100,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  'Demo request',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+              const InfoBadge('Demo request'),
               const SizedBox(height: 24),
-              const Text(
-                'Product title',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+              const FieldLabel('Product title'),
               TextFormField(
                 controller: _titleController,
                 validator: _validateTitle,
@@ -123,11 +110,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 decoration: const InputDecoration(hintText: 'e.g. Travel mug'),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Price (USD)',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+              const FieldLabel('Price (USD)'),
               TextFormField(
                 controller: _priceController,
                 validator: _validatePrice,
@@ -147,19 +130,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
               const SizedBox(height: 16),
 
               if (_createdId != null)
-                _resultBox(
-                  color: AppColors.successBackground,
-                  textColor: AppColors.successText,
+                StatusBox(
+                  type: StatusType.success,
                   title: 'Demo request successful',
                   message: 'Product ID: $_createdId',
                 ),
 
               if (_error != null) ...[
-                _resultBox(
-                  color: AppColors.errorBackground,
-                  textColor: AppColors.errorText,
+                StatusBox(
+                  type: StatusType.error,
                   title: 'Request failed',
-                  message: _error!,
+                  message: _error,
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton(
@@ -176,33 +157,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _resultBox({
-    required Color color,
-    required Color textColor,
-    required String title,
-    required String message,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 6),
-          Text(message, style: TextStyle(color: textColor)),
-        ],
       ),
     );
   }
