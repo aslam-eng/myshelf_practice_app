@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/product_service.dart';
 import '../widgets/field_label.dart';
+import '../widgets/info_badge.dart';
 import '../widgets/status_box.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -88,7 +89,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
   @override
   Widget build(BuildContext context) {
     debugPrint('AddProductScreen: build');
-    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Add product')),
@@ -100,17 +100,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colors.primaryContainer,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text(
-                  'Demo request',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+              const InfoBadge('Demo request'),
               const SizedBox(height: 24),
               const FieldLabel('Product title'),
               TextFormField(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/favourites_provider.dart';
+import '../widgets/info_badge.dart';
+import '../widgets/message_view.dart';
 import '../widgets/page_title.dart';
 import '../widgets/product_card.dart';
 
@@ -31,21 +33,16 @@ class SavedScreen extends StatelessWidget {
                 style: TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${favourites.count} saved',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+              InfoBadge('${favourites.count} saved'),
               const SizedBox(height: 16),
               Expanded(
                 child: saved.isEmpty
-                    ? _buildEmptyState()
+                    ? MessageView(
+                        icon: Icons.favorite_border,
+                        message: 'No saved products yet',
+                        buttonText: 'Browse products',
+                        onPressed: onBrowse,
+                      )
                     : ListView.builder(
                         itemCount: saved.length,
                         itemBuilder: (context, index) =>
@@ -63,24 +60,6 @@ class SavedScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.favorite_border, size: 48, color: Colors.grey),
-          const SizedBox(height: 12),
-          const Text('No saved products yet'),
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: onBrowse,
-            child: const Text('Browse products'),
-          ),
-        ],
       ),
     );
   }
