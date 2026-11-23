@@ -5,6 +5,7 @@ import '../models/product.dart';
 import '../providers/products_provider.dart';
 import '../providers/profile_provider.dart';
 import '../services/product_service.dart';
+import '../widgets/page_title.dart';
 import '../widgets/product_card.dart';
 import 'add_product_screen.dart';
 
@@ -89,10 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'My Shelf',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
+              const PageTitle('My Shelf'),
               const SizedBox(height: 8),
               Row(
                 children: [

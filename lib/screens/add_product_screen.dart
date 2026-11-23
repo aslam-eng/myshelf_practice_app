@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/product_service.dart';
+import '../widgets/field_label.dart';
 import '../widgets/status_box.dart';
 
 class AddProductScreen extends StatefulWidget {
@@ -111,11 +112,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Product title',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+              const FieldLabel('Product title'),
               TextFormField(
                 controller: _titleController,
                 validator: _validateTitle,
@@ -123,11 +120,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 decoration: const InputDecoration(hintText: 'e.g. Travel mug'),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Price (USD)',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+              const FieldLabel('Price (USD)'),
               TextFormField(
                 controller: _priceController,
                 validator: _validatePrice,

@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/profile_provider.dart';
+import '../widgets/field_label.dart';
+import '../widgets/page_title.dart';
 import '../widgets/status_box.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -101,10 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'My profile',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
+              const PageTitle('My profile'),
               const SizedBox(height: 24),
 
               // ---------- Avatar + camera button (Stack + Positioned) ----------
@@ -147,11 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
 
               // ---------- Name form ----------
-              const Text(
-                'Display name',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+              const FieldLabel('Display name'),
               TextField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,

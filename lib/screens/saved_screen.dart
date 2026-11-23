@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/favourites_provider.dart';
+import '../widgets/page_title.dart';
 import '../widgets/product_card.dart';
 
 // No setState here: all data comes from FavouritesProvider.
@@ -23,10 +24,7 @@ class SavedScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Saved products',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
+              const PageTitle('Saved products'),
               const SizedBox(height: 8),
               const Text(
                 'Your favourites, in one place.',
