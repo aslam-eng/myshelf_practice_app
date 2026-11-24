@@ -99,13 +99,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text(name.isEmpty ? 'Hello there' : 'Hello, $name'),
                   ),
                   FilledButton.tonal(
-                    // push: place the form on top; its back arrow pops it.
+                    // Bottom sheet: the form slides up over Home.
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AddProductScreen(),
-                        ),
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        useSafeArea: true,
+                        showDragHandle: true,
+                        builder: (_) => const AddProductScreen(),
                       );
                     },
                     child: const Text('+ Add'),
