@@ -17,7 +17,7 @@ and send a demo product request. Built for the Flutter intern two-day assignment
 5. Build the debug APK: `flutter build apk --debug`
    (output: `build/app/outputs/flutter-apk/app-debug.apk`)
 
-Packages: `provider`, `http`, `image_picker`, `shared_preferences`.
+Packages: `provider`, `http`, `image_picker`, `shared_preferences`, `path_provider`.
 
 ## Completed features
 
@@ -33,6 +33,8 @@ Packages: `provider`, `http`, `image_picker`, `shared_preferences`.
   and a retryable error that keeps the input.
 - **Storage:** display name and saved products (id, title, category, price, thumbnail) are kept
   in `shared_preferences` as JSON and survive a full restart; saved titles and prices work offline.
+  The profile photo is copied into the app's documents folder (`path_provider`) and only its
+  path is stored in `shared_preferences`, so it also survives a restart.
 - **Errors:** timeouts (10 s), no internet, dropped connections, non-2xx status codes and invalid JSON
   all show a clear message (one place: `ApiException.from`).
 - **Tests:** model / JSON tests, a service test, and a widget test for the Save button.
@@ -63,7 +65,8 @@ lib/
 - `FavouritesProvider`: one shared favourites list for Home and Saved. `toggle()` saves to
   storage first, then calls `notifyListeners()` so both tabs update; if saving fails, nothing
   changes and the card shows an error SnackBar.
-- `ProfileProvider`: the saved display name, shown on Home ("Hello, …") and edited on Profile.
+- `ProfileProvider`: the saved display name, shown on Home ("Hello, …") and edited on Profile,
+  and the saved photo path. Both write to disk first, then update the screen.
 - `ProductsProvider`: Home's products, loading / error state and search text. `loadProducts()`
   replaces the list (never duplicates); a failed refresh keeps the old products and rethrows,
   so Home shows a SnackBar. The first load starts in `main()` when the provider is created.
@@ -74,7 +77,7 @@ lib/
   including pushed routes, can find them.
 
 **setState (local UI state only)**
-- `ProfileScreen`: selected photo preview, saving state, "Profile saved" message.
+- `ProfileScreen`: saving state, "Profile saved" message, name error.
 - `AddProductScreen`: sending state, returned id, error message.
 - `MainShell`: selected tab index.
 - Favourites are never copied into `setState`; they always come from the provider.
@@ -112,8 +115,8 @@ products are not reloaded.
 
 ## Known issues / limitations
 
-- The profile photo is not stored: it resets after an app restart
-  (persistence is optional for this assignment).
+- The photo's full path is stored. That is stable on Android (this app's target); on iOS the
+  app folder can change after an update, so storing only the file name would be safer there.
 - DummyJSON only simulates POST: the new product is not saved and does not appear on Home.
 - Product images need internet; offline, Saved shows placeholders (titles and prices still show).
 - `test/product_service_test.dart` calls the real API, so it fails without internet.
