@@ -124,8 +124,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Consumer: only this count rebuilds when products change.
                   Consumer<ProductsProvider>(
                     builder: (context, products, child) {
+                      // total = matches on the SERVER, not just loaded ones.
                       return Text(
-                        '${products.visibleProducts.length} items',
+                        products.isLoading ? '' : '${products.total} items',
                         style: const TextStyle(color: Colors.grey),
                       );
                     },
@@ -167,16 +168,18 @@ class _HomeScreenState extends State<HomeScreen> {
     if (visible.isEmpty) {
       return Center(
         child: Text(
-          products.searchText.isEmpty
+          // activeQuery = the text these (zero) results belong to.
+          products.activeQuery.isEmpty
               ? 'No products available'
-              : 'No products match "${products.searchText}"',
+              : 'No products match "${products.activeQuery}"',
           style: const TextStyle(color: Colors.grey),
         ),
       );
     }
 
     // One extra slot at the end while more pages exist (or the last one failed).
-    final showFooter = products.canLoadMore || products.loadMoreError != null;
+    // Search results are paginated too, so no "not while searching" rule.
+    final showFooter = products.hasMore || products.loadMoreError != null;
 
     return RefreshIndicator(
       onRefresh: _refresh,
