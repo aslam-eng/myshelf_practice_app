@@ -8,6 +8,7 @@ class StorageService {
   // Key names in one place, so save and load never use different spellings.
   static const String _nameKey = 'display_name';
   static const String _savedProductsKey = 'saved_products';
+  static const String _photoPathKey = 'profile_photo_path';
 
   // ---------- Display name ----------
   Future<void> saveName(String name) async {
@@ -18,6 +19,17 @@ class StorageService {
   Future<String> loadName() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_nameKey) ?? '';
+  }
+
+  // ---------- Profile photo (only the file PATH is stored, not the image) ----------
+  Future<void> savePhotoPath(String path) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_photoPathKey, path);
+  }
+
+  Future<String?> loadPhotoPath() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_photoPathKey); // null = no photo saved yet
   }
 
   // ---------- Saved products ----------

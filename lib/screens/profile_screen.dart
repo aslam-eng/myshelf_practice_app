@@ -21,7 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
 
   // Local UI state (setState). Only this screen uses it.
-  File? _photo; // null = show initials placeholder
+  // The photo is NOT here: it is saved data, so it lives in ProfileProvider.
   bool _isSaving = false;
   bool _showSaved = false;
   String? _nameError;
@@ -40,20 +40,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickPhoto() async {
+    // Grab the provider BEFORE any await (context is not safe after one).
+    final profile = context.read<ProfileProvider>();
     try {
       final XFile? picked = await _picker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 800, // smaller image = less memory
       );
       if (picked == null) return; // cancelled: keep the existing photo
-      if (!mounted) return;
-      setState(() {
-        _photo = File(picked.path);
-      });
+      // Copy + save the path + update the screen (see ProfileProvider).
+      await profile.savePhoto(picked.path);
     } catch (e) {
+      // Gallery failed to open OR saving failed: the old photo stays.
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open the gallery')),
+        const SnackBar(content: Text('Could not update the photo')),
       );
     }
   }
@@ -102,7 +103,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final savedName = context.watch<ProfileProvider>().name;
+    // watch: redraw when the saved name OR photo changes.
+    final profile = context.watch<ProfileProvider>();
+    final savedName = profile.name;
+    final photoPath = profile.photoPath; // null = show initials
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -123,9 +127,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CircleAvatar(
                       radius: 56,
                       backgroundColor: colors.primaryContainer,
-                      backgroundImage:
-                          _photo != null ? FileImage(_photo!) : null,
-                      child: _photo == null
+                      backgroundImage: photoPath != null
+                          ? FileImage(File(photoPath))
+                          : null,
+                      child: photoPath == null
                           ? Text(
                               _initials(savedName),
                               style: TextStyle(
