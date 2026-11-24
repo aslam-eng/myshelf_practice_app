@@ -1,6 +1,8 @@
 import 'dart:async'; // TimeoutException
 import 'dart:io'; // SocketException
 
+import 'package:http/http.dart' as http; // ClientException
+
 // Our own error type for API problems.
 // toString() returns only the clean message, so the UI can show it directly
 // (a normal Exception would print "Exception: ..." in front).
@@ -17,6 +19,11 @@ class ApiException implements Exception {
     if (error is ApiException) return error;
     if (error is SocketException) {
       return ApiException('No internet connection');
+    }
+    // AFTER SocketException: a "no internet" error is BOTH types,
+    // and we want the more precise "No internet connection" for it.
+    if (error is http.ClientException) {
+      return ApiException('Connection problem. Please try again.');
     }
     if (error is TimeoutException) {
       return ApiException('Request timed out. Please try again.');
