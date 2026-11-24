@@ -21,9 +21,13 @@ Packages: `provider`, `http`, `image_picker`, `shared_preferences`, `path_provid
 
 ## Completed features
 
-- **Home:** loads 12 products from DummyJSON (image, title, category, price, save button),
+- **Home:** loads products from DummyJSON 12 at a time (image, title, category, price, save button),
   local title search with a no-results state, pull-to-refresh without duplicates,
   loading / error-with-Retry / empty states, and a broken-image fallback.
+- **Pagination:** a `ScrollController` loads the next page (`limit=12&skip=<loaded>`) when the
+  user is 200 px from the bottom, with a small spinner at the end of the list. `loadMore()` has a
+  guard (one request at a time, stop at `total`), and a failed page shows Retry instead of
+  firing again on every scroll. While searching, no more pages are loaded.
 - **Saved:** the same Provider data as Home, with a remove action, an instant saved count,
   and a "No saved products yet" state with a Browse products button.
 - **Profile:** edit and save the display name; pick a photo from the gallery
@@ -88,8 +92,8 @@ lib/
 - `ProfileScreen`: fills the name field from the provider with `context.read`.
 
 **dispose**
-- Every screen disposes the `TextEditingController`s it creates
-  (Home search, Profile name, Add product title and price).
+- Every screen disposes the controllers it creates
+  (Home search + `ScrollController`, Profile name, Add product title and price).
 
 **mounted**
 - Checked before every `setState` after an `await` (photo picking, saving the name,
