@@ -19,9 +19,12 @@ class ProfileProvider extends ChangeNotifier {
 
   // Awaited by the Profile screen, so "Profile saved" only shows
   // after the name is really written to disk.
+  // Disk first: if the write fails, _name keeps the old value,
+  // so Home never shows a name that was not really saved.
   Future<void> saveName(String newName) async {
-    _name = newName.trim();
+    final trimmed = newName.trim();
+    await _storage.saveName(trimmed); // may throw -> lines below are skipped
+    _name = trimmed;
     notifyListeners();
-    await _storage.saveName(_name);
   }
 }
