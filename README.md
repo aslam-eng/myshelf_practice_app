@@ -33,7 +33,8 @@ Packages: `provider`, `http`, `image_picker`, `shared_preferences`.
   and a retryable error that keeps the input.
 - **Storage:** display name and saved products (id, title, category, price, thumbnail) are kept
   in `shared_preferences` as JSON and survive a full restart; saved titles and prices work offline.
-- **Errors:** timeouts (10 s), no internet, non-2xx status codes and invalid JSON all show a clear message.
+- **Errors:** timeouts (10 s), no internet, dropped connections, non-2xx status codes and invalid JSON
+  all show a clear message (one place: `ApiException.from`).
 - **Tests:** model / JSON tests, a service test, and a widget test for the Save button.
 
 ## Project structure
@@ -47,6 +48,7 @@ lib/
   services/api_exception.dart   clean error messages for the UI
   providers/favourites_provider.dart  shared favourites (ChangeNotifier)
   providers/profile_provider.dart     shared display name (ChangeNotifier)
+  providers/products_provider.dart    search text for Home (ChangeNotifier)
   screens/main_shell.dart       bottom navigation (IndexedStack)
   screens/home_screen.dart
   screens/saved_screen.dart
@@ -61,11 +63,11 @@ lib/
 - `FavouritesProvider`: one shared favourites list for Home and Saved. `toggle()` calls
   `notifyListeners()` so both tabs update instantly, then saves to storage.
 - `ProfileProvider`: the saved display name, shown on Home ("Hello, …") and edited on Profile.
+- `ProductsProvider`: the search text; Home's count and list rebuild through `Consumer` while typing.
 - `context.watch` in `build` for listening UI (`ProductCard`, `SavedScreen`, Home greeting);
   `context.read` in callbacks (Save button, Save profile, initial name in `initState`).
 - Providers are created in `main()` above `MaterialApp`, so every screen,
   including pushed routes, can find them.
-  - `ProductsProvider`: the search text; Home's count and list rebuild through `Consumer` while typing.
 
 **setState (local UI state only)**
 - `HomeScreen`: product list, loading / error state.
@@ -109,7 +111,6 @@ products are not reloaded.
 - DummyJSON only simulates POST: the new product is not saved and does not appear on Home.
 - Product images need internet; offline, Saved shows placeholders (titles and prices still show).
 - `test/product_service_test.dart` calls the real API, so it fails without internet.
-- The error handling in `ProductService` is repeated in both methods; it could be moved into a shared helper.
 
 ## Outside help
 
