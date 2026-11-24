@@ -1,6 +1,4 @@
-import 'dart:async'; // TimeoutException
 import 'dart:convert'; // jsonDecode
-import 'dart:io'; // SocketException
 
 import 'package:http/http.dart' as http;
 
@@ -30,14 +28,8 @@ class ProductService {
         productList.add(Product.fromJson(Map<String, dynamic>.from(item)));
       }
       return productList;
-    } on SocketException {
-      throw ApiException('No internet connection');
-    } on TimeoutException {
-      throw ApiException('Request timed out. Please try again.');
-    } on FormatException {
-      throw ApiException('Unexpected response from server');
-    } on TypeError {
-      throw ApiException('Unexpected response from server');
+    } catch (e) {
+      throw ApiException.from(e); // one place turns any error into a clean message
     }
   }
 
@@ -61,14 +53,8 @@ class ProductService {
 
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       return data['id'] as int;
-    } on SocketException {
-      throw ApiException('No internet connection');
-    } on TimeoutException {
-      throw ApiException('Request timed out. Please try again.');
-    } on FormatException {
-      throw ApiException('Unexpected response from server');
-    } on TypeError {
-      throw ApiException('Unexpected response from server');
+    } catch (e) {
+      throw ApiException.from(e);
     }
   }
 }
