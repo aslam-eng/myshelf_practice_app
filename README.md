@@ -109,7 +109,7 @@ products are not reloaded.
 - DummyJSON only simulates POST: the new product is not saved and does not appear on Home.
 - Product images need internet; offline, Saved shows placeholders (titles and prices still show).
 - `test/product_service_test.dart` calls the real API, so it fails without internet.
-- The error handling in `ProductService` is repeated in both methods; it could be moved into a shared helper.
+- **Errors:** timeouts (10 s), no internet, dropped connections, non-2xx status codes and invalid JSON all show a clear message.
 
 ## Outside help
 
