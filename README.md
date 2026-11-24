@@ -65,9 +65,10 @@ lib/
   `context.read` in callbacks (Save button, Save profile, initial name in `initState`).
 - Providers are created in `main()` above `MaterialApp`, so every screen,
   including pushed routes, can find them.
+  - `ProductsProvider`: the search text; Home's count and list rebuild through `Consumer` while typing.
 
 **setState (local UI state only)**
-- `HomeScreen`: product list, loading / error state, search text.
+- `HomeScreen`: product list, loading / error state.
 - `ProfileScreen`: selected photo preview, saving state, "Profile saved" message.
 - `AddProductScreen`: sending state, returned id, error message.
 - `MainShell`: selected tab index.
@@ -87,7 +88,7 @@ lib/
 
 ## Lifecycle order (logged in `AddProductScreen` and `HomeScreen`)
 
-Opening Add product, typing, then pressing back prints:
+Opening the Add product bottom sheet, typing, then closing it prints:
 
 ```
 AddProductScreen: initState   created once: one-time setup
