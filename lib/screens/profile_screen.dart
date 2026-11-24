@@ -59,6 +59,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _saveName() async {
+    if (_isSaving) return; // Guard 1: ignore a second quick tap
+
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       setState(() => _nameError = 'Please enter a name');
@@ -73,13 +75,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     // Provider updates Home's greeting + writes to storage.
-    await context.read<ProfileProvider>().saveName(name);
-
-    if (!mounted) return;
-    setState(() {
-      _isSaving = false;
-      _showSaved = true;
-    });
+    try {
+      await context.read<ProfileProvider>().saveName(name);
+      if (!mounted) return;
+      setState(() => _showSaved = true); // only on success
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not save your name. Please try again.'),
+        ),
+      );
+    } finally {
+      // Runs on success AND failure: the button is always enabled again.
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   // "Aslam Ali" -> "AA", "Aslam" -> "A"
