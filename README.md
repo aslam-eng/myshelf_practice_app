@@ -48,7 +48,7 @@ lib/
   services/api_exception.dart   clean error messages for the UI
   providers/favourites_provider.dart  shared favourites (ChangeNotifier)
   providers/profile_provider.dart     shared display name (ChangeNotifier)
-  providers/products_provider.dart    search text for Home (ChangeNotifier)
+  providers/products_provider.dart    Home's products, loading / error, search (ChangeNotifier)
   screens/main_shell.dart       bottom navigation (IndexedStack)
   screens/home_screen.dart
   screens/saved_screen.dart
@@ -64,21 +64,24 @@ lib/
   storage first, then calls `notifyListeners()` so both tabs update; if saving fails, nothing
   changes and the card shows an error SnackBar.
 - `ProfileProvider`: the saved display name, shown on Home ("Hello, …") and edited on Profile.
-- `ProductsProvider`: the search text; Home's count and list rebuild through `Consumer` while typing.
+- `ProductsProvider`: Home's products, loading / error state and search text. `loadProducts()`
+  replaces the list (never duplicates); a failed refresh keeps the old products and rethrows,
+  so Home shows a SnackBar. The first load starts in `main()` when the provider is created.
+  Home's count and list rebuild through `Consumer`.
 - `context.watch` in `build` for listening UI (`ProductCard`, `SavedScreen`, Home greeting);
   `context.read` in callbacks (Save button, Save profile, initial name in `initState`).
 - Providers are created in `main()` above `MaterialApp`, so every screen,
   including pushed routes, can find them.
 
 **setState (local UI state only)**
-- `HomeScreen`: product list, loading / error state.
 - `ProfileScreen`: selected photo preview, saving state, "Profile saved" message.
 - `AddProductScreen`: sending state, returned id, error message.
 - `MainShell`: selected tab index.
 - Favourites are never copied into `setState`; they always come from the provider.
 
 **initState**
-- `HomeScreen`: starts loading products once (never in `build`).
+- `HomeScreen`: only logs; loading starts in the provider's `create`, because calling
+  `notifyListeners()` while Flutter is building a screen throws an error.
 - `ProfileScreen`: fills the name field from the provider with `context.read`.
 
 **dispose**
@@ -86,8 +89,10 @@ lib/
   (Home search, Profile name, Add product title and price).
 
 **mounted**
-- Checked before every `setState` after an `await` (Home loading, photo picking,
-  saving the name, the POST request), so leaving a screen mid-request causes no error.
+- Checked before every `setState` after an `await` (photo picking, saving the name,
+  the POST request), so leaving a screen mid-request causes no error.
+- Where a widget has no `mounted` (or may be removed), `ScaffoldMessenger` and providers
+  are grabbed BEFORE the `await` instead (Home refresh, Save button).
 
 ## Lifecycle order (logged in `AddProductScreen` and `HomeScreen`)
 

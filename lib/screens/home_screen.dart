@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/product.dart';
 import '../providers/products_provider.dart';
 import '../providers/profile_provider.dart';
-import '../services/product_service.dart';
 import '../widgets/message_view.dart';
 import '../widgets/page_title.dart';
 import '../widgets/product_card.dart';
 import 'add_product_screen.dart';
 
+// Products, loading and error live in ProductsProvider.
+// This screen only DRAWS that state; its only own object is the search controller.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,21 +18,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ProductService _productService = ProductService();
   final TextEditingController _searchController = TextEditingController();
-
-  // Local UI state (setState). Favourites are NOT here: they live in Provider.
-  List<Product> _products = [];
-  bool _isLoading = true;
-  String? _error; // null = no error
 
   // ---------- Lifecycle ----------
   // Order: initState (once) -> build (many times) -> dispose (once).
+  // The first product load starts in main.dart (provider create), not here.
   @override
   void initState() {
     super.initState();
     debugPrint('HomeScreen: initState');
-    _loadProducts(); // one-time loading starts here, never in build
   }
 
   @override
@@ -43,38 +37,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ---------- Data ----------
-  // showLoader = false for pull-to-refresh (RefreshIndicator has its own spinner).
-  Future<void> _loadProducts({bool showLoader = true}) async {
-    if (showLoader) {
-      setState(() {
-        _isLoading = true;
-        _error = null;
-      });
-    }
-
+  // Pull-to-refresh keeps the current products. If it fails, the provider
+  // rethrows the error and we show it in a SnackBar.
+  Future<void> _refresh() async {
+    // Grab these BEFORE the await (context may change while waiting).
+    final products = context.read<ProductsProvider>();
+    final messenger = ScaffoldMessenger.of(context);
     try {
-      final products = await _productService.fetchProducts();
-      if (!mounted) return; // screen destroyed while waiting? stop.
-      setState(() {
-        _products = products; // REPLACE, so refresh never duplicates
-        _error = null;
-        _isLoading = false;
-      });
+      await products.loadProducts(showLoader: false);
     } catch (e) {
-      if (!mounted) return;
-
-      // Refresh failed, but we still have products: keep showing them.
-      if (_products.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not refresh: $e')),
-        );
-        return;
-      }
-
-      setState(() {
-        _error = e.toString(); // nothing to show, so use the error page
-        _isLoading = false;
-      });
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not refresh: $e')),
+      );
     }
   }
 
@@ -132,12 +106,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const Spacer(),
-                  // Consumer: only this count rebuilds while searching.
+                  // Consumer: only this count rebuilds when products change.
                   Consumer<ProductsProvider>(
-                    builder: (context, search, child) {
-                      final count = search.filter(_products).length;
+                    builder: (context, products, child) {
                       return Text(
-                        '$count items',
+                        '${products.visibleProducts.length} items',
                         style: const TextStyle(color: Colors.grey),
                       );
                     },
@@ -147,14 +120,10 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
               // Expanded: the list gets the remaining height (bounded space).
               Expanded(
-                // Consumer: only the list area rebuilds while searching.
+                // Consumer: only the list area rebuilds when products change.
                 child: Consumer<ProductsProvider>(
-                  builder: (context, search, child) {
-                    return _buildContent(
-                      search.filter(_products),
-                      search.searchText,
-                    );
-                  },
+                  builder: (context, products, child) =>
+                      _buildContent(products),
                 ),
               ),
             ],
@@ -165,36 +134,37 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Shows exactly ONE state: loading, error, empty, or the list.
-  Widget _buildContent(List<Product> products, String searchText) {
-    if (_isLoading) {
+  Widget _buildContent(ProductsProvider products) {
+    if (products.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null) {
+    if (products.error != null) {
       return MessageView(
         icon: Icons.wifi_off,
-        message: _error!,
+        message: products.error!,
         buttonText: 'Retry',
-        onPressed: _loadProducts,
+        onPressed: products.loadProducts,
       );
     }
 
-    if (products.isEmpty) {
+    final visible = products.visibleProducts;
+    if (visible.isEmpty) {
       return Center(
         child: Text(
-          searchText.isEmpty
+          products.searchText.isEmpty
               ? 'No products available'
-              : 'No products match "$searchText"',
+              : 'No products match "${products.searchText}"',
           style: const TextStyle(color: Colors.grey),
         ),
       );
     }
 
     return RefreshIndicator(
-      onRefresh: () => _loadProducts(showLoader: false),
+      onRefresh: _refresh,
       child: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) => ProductCard(product: products[index]),
+        itemCount: visible.length,
+        itemBuilder: (context, index) => ProductCard(product: visible[index]),
       ),
     );
   }

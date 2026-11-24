@@ -27,7 +27,13 @@ Future<void> main() async {
         // They live for the whole app, so no manual dispose is needed.
         ChangeNotifierProvider.value(value: favouritesProvider),
         ChangeNotifierProvider.value(value: profileProvider),
-        ChangeNotifierProvider(create: (_) => ProductsProvider()),
+        // Start the first load HERE, not in HomeScreen.initState:
+        // loadProducts() calls notifyListeners() right away, and doing that
+        // while Flutter is building a screen throws an error.
+        // At create time nobody is listening yet, so it is safe.
+        ChangeNotifierProvider(
+          create: (_) => ProductsProvider()..loadProducts(),
+        ),
       ],
       child: const MyApp(),
     ),
