@@ -22,12 +22,15 @@ Packages: `provider`, `http`, `image_picker`, `shared_preferences`, `path_provid
 ## Completed features
 
 - **Home:** loads products from DummyJSON 12 at a time (image, title, category, price, save button),
-  local title search with a no-results state, pull-to-refresh without duplicates,
+  server search over all products (`/products/search`) with a no-results state, pull-to-refresh without duplicates,
   loading / error-with-Retry / empty states, and a broken-image fallback.
 - **Pagination:** a `ScrollController` loads the next page (`limit=12&skip=<loaded>`) when the
   user is 200 px from the bottom, with a small spinner at the end of the list. `loadMore()` has a
   guard (one request at a time, stop at `total`), and a failed page shows Retry instead of
-  firing again on every scroll. While searching, no more pages are loaded.
+  firing again on every scroll. Search results are paginated the same way.
+- **Search:** typing is debounced (one request after a 400 ms pause, not one per letter), the URL
+  is built with `Uri.https` so user input is encoded, and each list load takes a "ticket" number
+  so a slow, outdated response can never overwrite newer results.
 - **Saved:** the same Provider data as Home, with a remove action, an instant saved count,
   and a "No saved products yet" state with a Browse products button.
 - **Profile:** edit and save the display name; pick a photo from the gallery
@@ -74,6 +77,7 @@ lib/
 - `ProductsProvider`: Home's products, loading / error state and search text. `loadProducts()`
   replaces the list (never duplicates); a failed refresh keeps the old products and rethrows,
   so Home shows a SnackBar. The first load starts in `main()` when the provider is created.
+  It owns the debounce `Timer` and cancels it in `dispose()`.
   Home's count and list rebuild through `Consumer`.
 - `context.watch` in `build` for listening UI (`ProductCard`, `SavedScreen`, Home greeting);
   `context.read` in callbacks (Save button, Save profile, initial name in `initState`).

@@ -13,11 +13,18 @@ class ProductService {
   // How many products one page holds.
   static const int pageSize = 12;
 
-  // skip = how many products we already have (0 = first page).
-  Future<ProductPage> fetchProducts({int skip = 0}) async {
-    final url = Uri.parse(
-      'https://dummyjson.com/products?limit=$pageSize&skip=$skip',
-    );
+  // skip  = how many products we already have (0 = first page).
+  // query = search text; empty = all products.
+  Future<ProductPage> fetchProducts({int skip = 0, String query = ''}) async {
+    // Uri.https ENCODES the values, so user input like "phone & case"
+    // cannot break the URL. Never paste user input into a URL by hand.
+    final params = {'limit': '$pageSize', 'skip': '$skip'};
+    final url = query.isEmpty
+        ? Uri.https('dummyjson.com', '/products', params)
+        : Uri.https('dummyjson.com', '/products/search', {
+            'q': query,
+            ...params,
+          });
 
     try {
       final response = await http.get(url).timeout(_timeout);
