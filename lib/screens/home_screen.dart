@@ -9,7 +9,7 @@ import '../widgets/product_card.dart';
 import 'add_product_screen.dart';
 
 // Products, loading and error live in ProductsProvider.
-// This screen only DRAWS that state; its only own object is the search controller.
+// This screen only DRAWS that state; its own objects are the two controllers.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -19,6 +19,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  // Tells us how far the list is scrolled (for loading the next page).
+  final ScrollController _scrollController = ScrollController();
 
   // ---------- Lifecycle ----------
   // Order: initState (once) -> build (many times) -> dispose (once).
@@ -27,13 +29,26 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     debugPrint('HomeScreen: initState');
+    _scrollController.addListener(_onScroll); // one-time setup
   }
 
   @override
   void dispose() {
     debugPrint('HomeScreen: dispose');
-    _searchController.dispose(); // we created it, so we clean it up
+    _searchController.dispose(); // we created them, so we clean them up
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  // Runs MANY times per second while the list moves.
+  void _onScroll() {
+    final position = _scrollController.position;
+    // Within 200 px of the bottom -> ask for the next page early,
+    // so the user rarely sees the spinner.
+    if (position.pixels >= position.maxScrollExtent - 200) {
+      // No check here: loadMore()'s guard ignores the extra calls.
+      context.read<ProductsProvider>().loadMore();
+    }
   }
 
   // ---------- Data ----------
@@ -160,12 +175,45 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
+    // One extra slot at the end while more pages exist (or the last one failed).
+    final showFooter = products.canLoadMore || products.loadMoreError != null;
+
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView.builder(
-        itemCount: visible.length,
-        itemBuilder: (context, index) => ProductCard(product: visible[index]),
+        controller: _scrollController,
+        itemCount: visible.length + (showFooter ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == visible.length) return _buildFooter(products);
+          return ProductCard(product: visible[index]);
+        },
       ),
+    );
+  }
+
+  // Last item of the list: a small spinner, or the error with a Retry button.
+  Widget _buildFooter(ProductsProvider products) {
+    if (products.loadMoreError != null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          children: [
+            Text(
+              products.loadMoreError!,
+              style: const TextStyle(color: Colors.grey),
+            ),
+            TextButton(
+              onPressed: products.retryLoadMore,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }
