@@ -3,11 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:my_product_shelf/services/product_service.dart';
 
 void main() {
-  test('fetches 12 products from DummyJSON', () async {
+  test('fetches the first page of products from DummyJSON', () async {
     final service = ProductService();
 
-    final products = await service.fetchProducts();
+    final page = await service.fetchProducts();
 
-    expect(products.length, 12);
+    expect(page.products.length, ProductService.pageSize);
+    expect(page.total, greaterThan(page.products.length));
   });
 }

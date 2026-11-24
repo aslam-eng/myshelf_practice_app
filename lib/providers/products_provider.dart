@@ -40,7 +40,8 @@ class ProductsProvider extends ChangeNotifier {
     }
 
     try {
-      _products = await _service.fetchProducts(); // REPLACE, never duplicate
+      final page = await _service.fetchProducts(); // first page (skip = 0)
+      _products = page.products; // REPLACE, never duplicate
       _error = null;
     } catch (e) {
       if (_products.isEmpty) {
