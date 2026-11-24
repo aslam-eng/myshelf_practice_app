@@ -31,13 +31,19 @@ class FavouritesProvider extends ChangeNotifier {
   }
 
   // Save if not saved, remove if already saved.
-  void toggle(Product product) {
-    if (isSaved(product.id)) {
-      _saved.removeWhere((p) => p.id == product.id);
-    } else {
-      _saved.add(product);
-    }
-    notifyListeners(); // 1. update every listening screen instantly
-    _storage.saveProducts(_saved); // 2. then write to disk in the background
+  // Disk first (same rule as ProfileProvider): build a COPY, write it,
+  // and only then change _saved. If the write throws, nothing changed,
+  // so there is nothing to undo; the error goes up to the button.
+  Future<void> toggle(Product product) async {
+    final newList = isSaved(product.id)
+        ? _saved.where((p) => p.id != product.id).toList() // remove
+        : [..._saved, product]; // add
+
+    await _storage.saveProducts(newList); // may throw -> lines below skipped
+
+    _saved
+      ..clear()
+      ..addAll(newList);
+    notifyListeners(); // every listening screen updates
   }
 }

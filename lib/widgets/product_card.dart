@@ -82,9 +82,26 @@ class ProductCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     FilledButton.tonal(
-                      // read: just perform the action, no listening needed.
-                      onPressed: () =>
-                          context.read<FavouritesProvider>().toggle(product),
+                      onPressed: () async {
+                        // Grab these BEFORE the await: on the Saved tab,
+                        // removing an item removes this card, so its
+                        // context may be gone afterwards.
+                        // read: just perform the action, no listening needed.
+                        final favourites = context.read<FavouritesProvider>();
+                        final messenger = ScaffoldMessenger.of(context);
+                        try {
+                          await favourites.toggle(product);
+                        } catch (_) {
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Could not update saved products. '
+                                'Please try again.',
+                              ),
+                            ),
+                          );
+                        }
+                      },
                       child: Text(isSaved ? 'Saved' : '+ Save'),
                     ),
                   ],

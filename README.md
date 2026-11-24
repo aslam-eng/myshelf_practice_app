@@ -60,8 +60,9 @@ lib/
 ## Where the main concepts are used
 
 **Provider (ChangeNotifier)**
-- `FavouritesProvider`: one shared favourites list for Home and Saved. `toggle()` calls
-  `notifyListeners()` so both tabs update instantly, then saves to storage.
+- `FavouritesProvider`: one shared favourites list for Home and Saved. `toggle()` saves to
+  storage first, then calls `notifyListeners()` so both tabs update; if saving fails, nothing
+  changes and the card shows an error SnackBar.
 - `ProfileProvider`: the saved display name, shown on Home ("Hello, …") and edited on Profile.
 - `ProductsProvider`: the search text; Home's count and list rebuild through `Consumer` while typing.
 - `context.watch` in `build` for listening UI (`ProductCard`, `SavedScreen`, Home greeting);
