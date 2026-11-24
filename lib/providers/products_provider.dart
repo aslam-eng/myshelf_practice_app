@@ -18,20 +18,17 @@ class ProductsProvider extends ChangeNotifier {
   String get searchText => _searchText;
 
   // What the list shows: all products, filtered by the search text.
-  List<Product> get visibleProducts => filter(_products);
+  List<Product> get visibleProducts {
+    final query = _searchText.trim().toLowerCase();
+    if (query.isEmpty) return _products;
+    return _products
+        .where((p) => p.title.toLowerCase().contains(query))
+        .toList();
+  }
 
   void setSearchText(String value) {
     _searchText = value;
     notifyListeners();
-  }
-
-  // Still used by HomeScreen; removed once Home switches to visibleProducts.
-  List<Product> filter(List<Product> products) {
-    final query = _searchText.trim().toLowerCase();
-    if (query.isEmpty) return products;
-    return products
-        .where((p) => p.title.toLowerCase().contains(query))
-        .toList();
   }
 
   // showLoader = false for pull-to-refresh (RefreshIndicator has its own spinner).
